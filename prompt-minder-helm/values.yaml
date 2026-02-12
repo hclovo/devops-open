@@ -1,0 +1,120 @@
+# Default values for prompt-minder-helm.
+
+replicaCount: 1
+
+image:
+  repository: prompt-minder
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# Container port (Next.js listens on 3000)
+containerPort: 3000
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations: {}
+  hosts:
+    - host: prompt-minder.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+httpRoute:
+  enabled: false
+  annotations: {}
+  parentRefs:
+    - name: gateway
+      sectionName: http
+  hostnames:
+    - prompt-minder.local
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+
+# Environment variables injected from ConfigMap and Secret
+env:
+  # Non-sensitive config (from ConfigMap)
+  NODE_ENV: production
+  NEXT_PUBLIC_CLERK_SIGN_IN_URL: /sign-in
+  NEXT_PUBLIC_CLERK_SIGN_UP_URL: /sign-up
+  ADMIN_EMAIL: ""
+
+# Sensitive values (from Secret) — override these in your values-local.yaml
+secrets:
+  DATABASE_URL: "postgresql://user:password@host:5432/dbname?sslmode=require"
+  CLERK_SECRET_KEY: ""
+  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ""
+  AUTH_SECRET: ""
+  SUPABASE_URL: ""
+  SUPABASE_ANON_KEY: ""
+  ZHIPU_API_KEY: ""
+
+# Database migration init container
+migration:
+  enabled: false
+  image: {}  # Uses same image as app by default
+
+# Health check probes
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+  initialDelaySeconds: 15
+  periodSeconds: 20
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+
+volumes: []
+volumeMounts: []
+nodeSelector: {}
+tolerations: []
+affinity: {}
