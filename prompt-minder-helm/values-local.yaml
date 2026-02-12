@@ -1,0 +1,33 @@
+# values-local.yaml — Local development environment (Docker Desktop / Minikube / Rancher Desktop)
+
+image:
+  repository: prompt-minder
+  pullPolicy: Never        # Use locally built image
+  tag: "latest"
+
+env:
+  NODE_ENV: development
+  NEXT_PUBLIC_CLERK_SIGN_IN_URL: /sign-in
+  NEXT_PUBLIC_CLERK_SIGN_UP_URL: /sign-up
+  ADMIN_EMAIL: ""
+
+# Run database migration on every deploy
+migration:
+  enabled: true
+
+ingress:
+  enabled: true
+  className: "nginx"
+  hosts:
+    - host: prompt-minder.local
+      paths:
+        - path: /
+          pathType: Prefix
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi

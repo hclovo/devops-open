@@ -1,0 +1,49 @@
+# values-production.yaml — Production environment
+
+replicaCount: 2
+
+image:
+  repository: ghcr.io/hclovo/prompt-minder
+  pullPolicy: Always
+  tag: "latest"
+
+# Use a pre-created Kubernetes Secret (e.g. managed by External Secrets or sealed-secrets)
+existingSecret: "prompt-minder-secrets"
+
+env:
+  NODE_ENV: production
+  NEXT_PUBLIC_CLERK_SIGN_IN_URL: /sign-in
+  NEXT_PUBLIC_CLERK_SIGN_UP_URL: /sign-up
+  ADMIN_EMAIL: ""
+
+migration:
+  enabled: true
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts:
+    - host: prompt-minder.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: prompt-minder-tls
+      hosts:
+        - prompt-minder.example.com
+
+resources:
+  requests:
+    cpu: 500m
+    memory: 512Mi
+  limits:
+    cpu: "1"
+    memory: 1Gi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 75

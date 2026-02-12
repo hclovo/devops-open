@@ -65,7 +65,12 @@ env:
   NEXT_PUBLIC_CLERK_SIGN_UP_URL: /sign-up
   ADMIN_EMAIL: ""
 
+# Use an existing Secret instead of creating one from .Values.secrets
+# When set, the chart will NOT create a Secret resource and will reference this name instead
+existingSecret: ""
+
 # Sensitive values (from Secret) — override these in your values-local.yaml
+# Ignored when existingSecret is set
 secrets:
   DATABASE_URL: "postgresql://user:password@host:5432/dbname?sslmode=require"
   CLERK_SECRET_KEY: ""
