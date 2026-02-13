@@ -3,4 +3,4 @@ name: prompt-minder-helm
 description: Helm chart for PromptMinder - a Next.js application for managing and sharing AI prompts
 type: application
 version: 0.1.0
-appVersion: "0.2.0"
+appVersion: "0.2.1"
