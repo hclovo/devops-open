@@ -36,18 +36,6 @@ spec:
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- if .Values.migration.enabled }}
-      initContainers:
-        - name: db-migrate
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ["node", "drizzle/migrate.js"]
-          envFrom:
-            - configMapRef:
-                name: {{ include "prompt-minder-helm.fullname" . }}
-            - secretRef:
-                name: {{ .Values.existingSecret | default (include "prompt-minder-helm.fullname" .) }}
-      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           {{- with .Values.securityContext }}
