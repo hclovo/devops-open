@@ -1,6 +1,6 @@
 # Default values for prompt-minder-helm.
 
-replicaCount: 1
+replicaCount: 2
 
 image:
   repository: prompt-minder
